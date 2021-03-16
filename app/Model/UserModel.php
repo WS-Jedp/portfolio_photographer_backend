@@ -3,7 +3,7 @@
 namespace Models;
 
 use App\Database\MySql;
-
+use Exception;
 
 class UserModel {
   protected $db;
@@ -19,6 +19,45 @@ class UserModel {
   public function __construct()
   {
     $this->db = new MySql(); 
+  }
+
+  
+  /**
+   * Will authenticate the user in our database
+   * 
+   * @param string $email The email which is the user registered
+   * @param string $password The password which is the user registerd
+   * 
+   * @return array Will return an Array with the information of the User 
+   */
+  public function Login($email, $password)
+  {
+    try {
+
+      $columns = ["id", "email", "password"];
+      $condition = ["email" => $email];
+
+      $user = $this->db->getLogin($this->table, $columns, $condition);
+
+      $auth_password = password_verify($password, $user[0]["password"]);
+
+      if($auth_password) {
+
+        $user_data = [
+          "id" => $user[0]["id"],
+          "email" => $user[0]["email"]
+        ];
+        return $user_data;
+
+      } else {
+        throw new Exception("Bad credentials!");
+      }
+      
+
+
+    } catch(\Exception $exception) {
+      throw $exception;
+    }
   }
 
   
@@ -74,8 +113,14 @@ class UserModel {
       $values = [];
 
       foreach ($data as $key => $value) {
+        
         array_push($columns, $key);
-        array_push($values, $value);
+        if($key === "password") {
+          $hashed_pass = password_hash($value, PASSWORD_DEFAULT);
+          array_push($values, $hashed_pass);
+        } else {
+          array_push($values, $value);
+        }
       }
 
       $id = $this->db->createOne($this->table, $columns, $values);
@@ -94,12 +139,12 @@ class UserModel {
    * @return int $id Return the Id of the photo deleted 
    */
   public function deleteOne($id) {
-    try {
-      $id = $this->db->deleteOne($this->table, $id);
-      return $id;
-    } catch (\Exception $exception) {
-      throw $exception;
-    }
+      try {
+        $id = $this->db->deleteOne($this->table, $id);
+        return $id;
+      } catch (\Exception $exception) {
+        throw $exception;
+      }
   }
 
 }

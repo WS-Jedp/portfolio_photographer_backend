@@ -116,7 +116,7 @@ class PhotoController {
    * 
    * @return int $id Will return the Id of the photo deleted 
    */
-  public function delete($id)
+  public function delete()
   {
     if($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -131,7 +131,7 @@ class PhotoController {
           }
         }
 
-        $id = $this->photoModel->deleteOne($id);
+        $id = $this->photoModel->deleteOne($_POST["id"]);
 
         $json = [
           "status" => 201,

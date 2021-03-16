@@ -122,7 +122,7 @@ class AlbumController {
    * 
    * @return int $id Will return the Id of the album deleted 
    */
-  public function delete($id)
+  public function delete()
   {
     if($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -137,7 +137,7 @@ class AlbumController {
           }
         }
 
-        $id = $this->albumModel->deleteOne($id);
+        $id = $this->albumModel->deleteOne($_POST["id"]);
 
         $json = [
           "status" => 201,
