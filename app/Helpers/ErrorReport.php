@@ -35,7 +35,7 @@ class ErrorReport {
   {
     $json = [
       "message" => $this->message,
-      "status" => 501,
+      "status" => 400,
     ];
     http_response_code(501);
     return new Response(json_encode($json), $this->type);

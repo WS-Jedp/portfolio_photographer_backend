@@ -19,7 +19,7 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\": "app/Database",
-            "Models\\": "app/Models",
+            "Models\\": "app/Model",
             "Helpers\\": "app/Helpers"
         }
     }

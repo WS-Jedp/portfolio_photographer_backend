@@ -17,6 +17,7 @@ class Response {
   {
     switch ($type) {
       case 'json':
+        header('Content-Type: application/json');
         echo $data;
         break;
 
