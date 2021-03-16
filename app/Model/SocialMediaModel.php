@@ -4,37 +4,23 @@ namespace Models;
 
 use App\Database\MySql;
 
-/**
- * PhotoModel with act as a ORM for the table Photo in our database 
- *** Will give the next methods:
- * - getOne
- * - getAll
- * - getBy
- */
-class PhotoModel {
-
-  private $db;
-  private $table = "photo";
-  private $columns = [
+class SocialMediaModel {
+  protected $db;
+  protected $table = "social_media";
+  protected $columns = [
     "id",
     "name",
-    "description",
-    "location",
-    "date",
-    "camera_id",
-    "len_id",
-    "user_id",
     "url"
   ];
-  
+
   public function __construct()
   {
-    $this->db = new MySql();
+    $this->db = new MySql(); 
   }
-  
 
+  
   /**
-   * Will return One photo, the one according to the ID passed by his param
+   * Will return One Social Media, the one according to the ID passed by his param
    * 
    * @param integer id -> Must be the id of the element that we want to find
    *  
@@ -42,9 +28,9 @@ class PhotoModel {
   public function getOne($id)
   {
     try {
-      $photo = $this->db->getOne($this->table, $this->columns, $id);
+      $social_media = $this->db->getOne($this->table, $this->columns, $id);
 
-      return $photo;
+      return $social_media;
     } catch(\Exception $exception) {
       throw $exception;
     }
@@ -52,29 +38,29 @@ class PhotoModel {
 
 
   /**
-   * Get all the photos of our database
+   * Get all the Social Medias of our database
    * 
    * @return array Will return an array with the whole data of our table database
    */
   public function getAll()
   {
     try {
-      $photos = $this->db->getAll($this->table, $this->columns);
-      return $photos;
+      $social_medias = $this->db->getAll($this->table, $this->columns);
+      return $social_medias;
     } catch(\Exception $exception) {
       throw $exception;
     }
   }
 
   /**
-   * Will receive the data that we'll create into the Photo table
+   * Will receive the data that we'll create into the Social Media table
    * 
    * @param array $data {
    *    @type associative array
    *    Key => value
    * }
    * 
-   * @return int $id Return the last id of the Photo created
+   * @return int $id Return the last id of the Social Media created
    *  
    */
   public function createOne($data)
@@ -98,11 +84,11 @@ class PhotoModel {
 
 
   /**
-   * Will delete the Photo defined with the Id that was passed by the parameters
+   * Will delete the Social Media defined with the Id that was passed by the parameters
    * 
-   * @param int $id The id of the photo to delete
+   * @param int $id The id of the Social Media to delete
    * 
-   * @return int $id Return the Id of the photo deleted 
+   * @return int $id Return the Id of the Social Media deleted 
    */
   public function deleteOne($id) {
     try {

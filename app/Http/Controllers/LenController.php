@@ -3,32 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Http\Response;
-use \Models\PhotoModel;
 use Helpers\ErrorReport;
-use \Exception;
+use Models\LenModel;
 
-class PhotoController {
-
-  private $photoModel;
+class LenController {
+  private $lenModel;
 
   public function __construct()
   {
-    $this->photoModel = new PhotoModel();    
+    $this->lenModel = new LenModel();    
   }
   /**
-   * Will return all the Photos saved into our database
+   * Will return all the Lenses saved into our database
    * 
-   * @return Response Will return a new Resonse with the according data of the response  
+   * @return Response Will return a new Response with the according data of the response  
    */
   public function Index() {
     try {
 
-      $photos = $this->photoModel->getAll();
+      $lenses = $this->lenModel->getAll();
       $json = [
         "status" => 200,
-        "message" => "The photos were succesfully fetched",
+        "message" => "The lenses were succesfully fetched",
         "data" => [
-          "photos" => $photos
+          "lenses" => $lenses
         ]
       ];
       http_response_code(200);
@@ -43,20 +41,20 @@ class PhotoController {
 
 
   /**
-   * Will return one photo of our database
+   * Will return one len of our database
    * 
-   * @param int $id The id of the photo that we want to find
+   * @param int $id The id of the len that we want to find
    * 
    * @return Response Will return the JSON
    */
   public function find($id) {
   try {
-    $photo = $this->photoModel->getOne($id);
+    $len = $this->lenModel->getOne($id);
 
     $json = [
       "status" => 200,
       "data" => [
-        "photo" => $photo
+        "len" => $len
       ]
     ];
 
@@ -70,40 +68,48 @@ class PhotoController {
 
 
  /**
-  * Will create one Photo into the table Photo in our database
+  * Will create one Len into the table Photo in our database
   * @return Response Will return a Resonse according to the type of Response with the data of the action. 
   */
   public function create() {
     if($_SERVER["REQUEST_METHOD"] === "POST") {
 
-      $require_data = ["name","location", "camera_id", "len_id", "user_id"]; 
+      try {
+        $require_data = ["mm"]; 
 
-      for($i = 0; $i < count($require_data); $i++) {
-        $in_array = array_key_exists($require_data[$i], $_POST);
-        if(!$in_array) {
-          $err = new ErrorReport("The field {$require_data[$i]} left, please submit all the required data");
-          return $err->normal();
+        for($i = 0; $i < count($require_data); $i++) {
+          $in_array = array_key_exists($require_data[$i], $_POST);
+          if(!$in_array) {
+            $err = new ErrorReport("The field {$require_data[$i]} left, please submit all the required data");
+            return $err->normal();
+          }
         }
+
+        $data = [];
+
+        foreach ($_POST as $key => $value) {
+          $data[$key] = $value;
+        }
+
+        $id = $this->lenModel->createOne($data);
+        
+        $json = [
+          "status" => 201,
+          "message" => "The $id Len was created succesfully",
+          "data" => [
+            "id" => $id
+          ]
+        ];
+        http_response_code(201); 
+
+        return new Response("json", json_encode($json));
+
+      } catch(\Exception $exception) {
+        $err = new ErrorReport($exception->getMessage());
+        return $err->database();
       }
 
-      $data = [];
-
-      foreach ($_POST as $key => $value) {
-        $data[$key] = $value;
-      }
-
-      $id = $this->photoModel->createOne($data);
-
-      $json = [
-        "status" => 201,
-        "message" => "The $id photo was created succesfully",
-        "data" => [
-          "id" => $id
-        ]
-      ];
-      http_response_code(201); 
-
-      return new Response('json', json_encode($json));
+      
 
     } else {
       $err = new ErrorReport("Bad method of request");
@@ -112,9 +118,9 @@ class PhotoController {
   }
 
   /**
-   * WIll delete the id's photo passed by the UR.
+   * WIll delete the id's Len passed by the UR.
    * 
-   * @return int $id Will return the Id of the photo deleted 
+   * @return int $id Will return the Id of the len deleted 
    */
   public function delete()
   {
@@ -126,16 +132,16 @@ class PhotoController {
         for ($i=0; $i < count($required_data); $i++) { 
           $in_array = array_key_exists($required_data[$i], $_POST);
           if(!$in_array) {
-            $err = new ErrorReport("The data is incomplete, please define the ID of the photo");
+            $err = new ErrorReport("The data is incomplete, please define the ID of the len");
             return $err->normal;
           }
         }
 
-        $id = $this->photoModel->deleteOne($_POST["id"]);
+        $id = $this->lenModel->deleteOne($_POST["id"]);
 
         $json = [
           "status" => 201,
-          "message" => "The photo with the $id was deleted succesfully",
+          "message" => "The len with the $id was deleted succesfully",
           "data" => [
             "id" => $id
           ]

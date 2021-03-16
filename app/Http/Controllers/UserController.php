@@ -27,7 +27,7 @@ class UserController {
         "status" => 200,
         "message" => "The users were succesfully fetched",
         "data" => [
-          "users" => json_decode($users)
+          "users" => $users
         ]
       ];
       http_response_code(200);
