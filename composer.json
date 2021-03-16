@@ -14,5 +14,13 @@
             "name": "Juanes",
             "email": "jedp082@gmail.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\": "app/Database",
+            "Models\\": "app/Models",
+            "Helpers\\": "app/Helpers"
+        }
+    }
 }
