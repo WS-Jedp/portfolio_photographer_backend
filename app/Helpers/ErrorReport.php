@@ -16,19 +16,21 @@ class ErrorReport {
   {
     $json = [
       "message" => $this->message,
-      "status" => 401
+      "status" => 500
     ];
-    return new Response(json_encode($json), $this->type);
+    http_response_code(500);
+    return new Response($this->type, json_encode($json));
   }
 
   public function database()
   {
     $json = [
       "message" => $this->message,
-      "status" => 404,
+      "status" => 500,
       "where" => "database"
     ];
-    return new Response(json_encode($json), $this->type);
+    http_response_code(500);
+    return new Response($this->type, json_encode($json));
   }
 
   public function badRequest()
@@ -38,7 +40,7 @@ class ErrorReport {
       "status" => 400,
     ];
     http_response_code(501);
-    return new Response(json_encode($json), $this->type);
+    return new Response($this->type, json_encode($json));
   }
 
   public function unauthorized()
@@ -49,6 +51,6 @@ class ErrorReport {
     ];
 
     http_response_code(401);
-    return new Response(json_encode($json), "json");
+    return new Response($this->type, json_encode($json));
   }
 }
