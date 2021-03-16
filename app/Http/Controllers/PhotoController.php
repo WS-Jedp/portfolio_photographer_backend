@@ -28,7 +28,7 @@ class PhotoController {
         "status" => 200,
         "message" => "The photos were succesfully fetched",
         "data" => [
-          "photos" => json_decode($photos)
+          "photos" => $photos
         ]
       ];
       http_response_code(200);
