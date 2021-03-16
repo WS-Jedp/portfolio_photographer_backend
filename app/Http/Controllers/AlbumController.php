@@ -54,7 +54,7 @@ class AlbumController {
     $json = [
       "status" => 200,
       "data" => [
-        "album" => json_decode($album)
+        "album" => $album
       ]
     ];
 

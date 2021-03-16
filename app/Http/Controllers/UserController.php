@@ -49,22 +49,22 @@ class UserController {
    * @return Response Will return the JSON
    */
   public function find($id) {
-  try {
-    $user = $this->userModel->getOne($id);
+    try {
+      $user = $this->userModel->getOne($id);
 
-    $json = [
-      "status" => 200,
-      "data" => [
-        "user" => json_decode($user)
-      ]
-    ];
+      $json = [
+        "status" => 200,
+        "data" => [
+          "user" => $user
+        ]
+      ];
 
-    return new Response('json', json_encode($json));
+      return new Response('json', json_encode($json));
 
-  } catch(\Exception $exception) {
-    $err = new ErrorReport($exception->getMessage());
-    return $err->normal();
-  }
+    } catch(\Exception $exception) {
+      $err = new ErrorReport($exception->getMessage());
+      return $err->normal();
+    }
  }
 
 
