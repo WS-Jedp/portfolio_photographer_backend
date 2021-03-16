@@ -4,29 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Http\Response;
 use Helpers\ErrorReport;
-use Models\AlbumModel;
+use Models\SocialMediaModel;
 
-class AlbumController {
-  private $albumModel;
+class SocialController {
+  private $socialMediaController;
 
   public function __construct()
   {
-    $this->albumModel = new AlbumModel();    
+    $this->socialMediaController = new SocialMediaModel();    
   }
   /**
-   * Will return all the Albums saved into our database
+   * Will return all the Social Meidas saved into our database
    * 
-   * @return Response Will return a new Resonse with the according data of the response  
+   * @return Response Will return a new Response with the according data of the response  
    */
   public function Index() {
     try {
 
-      $albums = $this->albumModel->getAll();
+      $socialMedias = $this->socialMediaController->getAll();
       $json = [
         "status" => 200,
-        "message" => "The albums were succesfully fetched",
+        "message" => "The Social Medias were succesfully fetched",
         "data" => [
-          "albums" => $albums
+          "socialMedias" => $socialMedias
         ]
       ];
       http_response_code(200);
@@ -41,20 +41,20 @@ class AlbumController {
 
 
   /**
-   * Will return one photo of our database
+   * Will return one Camera  of our database
    * 
-   * @param int $id The id of the album that we want to find
+   * @param int $id The id of the Social Media that we want to find
    * 
    * @return Response Will return the JSON
    */
   public function find($id) {
   try {
-    $album = $this->albumModel->getOne($id);
+    $socialMedia = $this->socialMediaController->getOne($id);
 
     $json = [
       "status" => 200,
       "data" => [
-        "album" => $album
+        "socialMedia" => $socialMedia
       ]
     ];
 
@@ -68,14 +68,14 @@ class AlbumController {
 
 
  /**
-  * Will create one Album into the table Photo in our database
+  * Will create one Social Media into the table Photo in our database
   * @return Response Will return a Resonse according to the type of Response with the data of the action. 
   */
   public function create() {
     if($_SERVER["REQUEST_METHOD"] === "POST") {
 
       try {
-        $require_data = ["name","description", "concept","user_id"]; 
+        $require_data = ["name", "url"]; 
 
         for($i = 0; $i < count($require_data); $i++) {
           $in_array = array_key_exists($require_data[$i], $_POST);
@@ -91,11 +91,11 @@ class AlbumController {
           $data[$key] = $value;
         }
 
-        $id = $this->albumModel->createOne($data);
+        $id = $this->socialMediaController->createOne($data);
         
         $json = [
           "status" => 201,
-          "message" => "The $id Album was created succesfully",
+          "message" => "The $id Social Media was created succesfully",
           "data" => [
             "id" => $id
           ]
@@ -118,9 +118,9 @@ class AlbumController {
   }
 
   /**
-   * WIll delete the id's Album passed by the UR.
+   * WIll delete the id's Social Media passed by the URL.
    * 
-   * @return int $id Will return the Id of the album deleted 
+   * @return int $id Will return the Id of the Social Media deleted 
    */
   public function delete()
   {
@@ -132,16 +132,16 @@ class AlbumController {
         for ($i=0; $i < count($required_data); $i++) { 
           $in_array = array_key_exists($required_data[$i], $_POST);
           if(!$in_array) {
-            $err = new ErrorReport("The data is incomplete, please define the ID of the album");
+            $err = new ErrorReport("The data is incomplete, please define the ID of the Social Media");
             return $err->normal;
           }
         }
 
-        $id = $this->albumModel->deleteOne($_POST["id"]);
+        $id = $this->socialMediaController->deleteOne($_POST["id"]);
 
         $json = [
           "status" => 201,
-          "message" => "The album with the $id was deleted succesfully",
+          "message" => "The Social Media with the $id was deleted succesfully",
           "data" => [
             "id" => $id
           ]
