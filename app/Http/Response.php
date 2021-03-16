@@ -16,18 +16,17 @@ class Response {
   private function setResponse($type, $data)
   {
     switch ($type) {
-      case 'json':
+      case "json":
         header('Content-Type: application/json');
         echo $data;
         break;
 
-      case 'view':
+      case "json":
         echo $data;
         break;
       
       default:
         return "Sorry, bad type of resposne";
-        break;
     }
   }
   

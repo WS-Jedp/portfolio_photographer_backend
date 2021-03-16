@@ -2,7 +2,6 @@
 
 namespace App\Database;
 
-use Helpers\ErrorReport;
 use \mysqli;
 use \Exception;
 
@@ -69,16 +68,11 @@ class MySql {
   public function connect(){
     try {
       if(!$this->connected) {
-        $this->database = new mysqli($this->host, $this->user, $this->passwrod, $this->db_name);
+        $this->database = new mysqli($this->host, $this->user, $this->password, $this->db_name);
         $this->connected = true;
       }
-
-      return true;
-
     } catch(\Exception $exception) {
-      
-      $error = new ErrorReport("Something went wrong in the connection -> " . $exception->getMessage());
-      return $error->database();
+      throw new Exception($exception->getMessage());
     }
   }
 
@@ -209,13 +203,17 @@ class MySql {
 
     $columns_statment = $this->createColumnsStatements($columns);
     $values_statement = $this->createValuesStatements($values);
+
     $result = $this->database->query("INSERT INTO $table ($columns_statment) VALUES ($values_statement)");
-    if($result  === TRUE) {
-      $last_id = $this->database->insert_id;
-      return $last_id; 
-    } else if($this->database->error) {
+
+    if($this->database->error) {
       throw new \Exception("We can't create the user -> " . $this->database->error);
     }
+
+    if($result == true) {
+      $last_id = $this->database->insert_id;
+      return $last_id; 
+    } 
      
   }
 

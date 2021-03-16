@@ -10,30 +10,30 @@ use App\Database\MySql;
  * - getOne
  * - getAll
  * - getBy
+ * - deleteOne
  */
-class PhotoModel {
+class AlbumModel {
 
-  private $db;
-  private $table = "photo";
-  private $columns = [
-    "id",
+  protected $db;
+  protected $table = "album";
+  protected $columns = [
     "name",
+    "concept",
     "description",
-    "location",
     "date",
-    "camera_id",
-    "len_id",
+    "primary_color",
+    "secondary_color",
     "user_id"
   ];
-  
+
   public function __construct()
   {
-    $this->db = new MySql();
+    $this->db = new MySql(); 
   }
-  
 
+  
   /**
-   * Will return One photo, the one according to the ID passed by his param
+   * Will return One Album, the one according to the ID passed by his param
    * 
    * @param integer id -> Must be the id of the element that we want to find
    *  
@@ -41,9 +41,9 @@ class PhotoModel {
   public function getOne($id)
   {
     try {
-      $photo = $this->db->getOne($this->table, $this->columns, $id);
+      $album = $this->db->getOne($this->table, $this->columns, $id);
 
-      return $photo;
+      return $album;
     } catch(\Exception $exception) {
       throw $exception;
     }
@@ -51,22 +51,22 @@ class PhotoModel {
 
 
   /**
-   * Get all the photos of our database
+   * Get all the albums of our database
    * 
    * @return array Will return an array with the whole data of our table database
    */
   public function getAll()
   {
     try {
-      $photos = $this->db->getAll($this->table, $this->columns);
-      return $photos;
+      $albums = $this->db->getAll($this->table, $this->columns);
+      return $albums;
     } catch(\Exception $exception) {
       throw $exception;
     }
   }
 
   /**
-   * Will receive the data that we'll create into the Photo table
+   * Will receive the data that we'll create into the Album table
    * 
    * @param array $data {
    *    @type associative array
@@ -97,9 +97,9 @@ class PhotoModel {
 
 
   /**
-   * Will delete the Photo defined with the Id that was passed by the parameters
+   * Will delete the Album defined with the Id that was passed by the parameters
    * 
-   * @param int $id The id of the photo to delete
+   * @param int $id The id of the album to delete
    * 
    * @return int $id Return the Id of the photo deleted 
    */
