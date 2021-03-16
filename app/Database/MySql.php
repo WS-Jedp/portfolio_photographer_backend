@@ -87,6 +87,15 @@ class MySql {
     $this->connected ? $this->database->close() : true;
   }
 
+
+  /**
+   * FUNCTION GET ONE
+   * function getOne() -> Will return one element of the indicated tables with the defined columns according to the id given
+   * 
+   * @param string $table Must be the name of the table
+   * @param array columns = Must be the columns that we want to return
+   * @param integer id = Must be the one element that we want to find
+   */
   public function getOne($table, $columns, $id)
   {
     if(!$this->connected) {
@@ -110,6 +119,16 @@ class MySql {
     return $data;
   }
 
+
+  /**
+   * Will return all the elemnts with the columns that we indicate of the table that we indicate.
+   * If we want, we can pass a third optional parameter to create a condition to our SQL query
+   * 
+   * @param string $table Must be the name of the column
+   * @param string[] $columns Must bet the columns' name that we want to get
+   * @param string $condition Optional! - If we want a condition into our SQL statement
+   * @return array 
+   */
   public function getAll($table, $columns, $condition = null){
     if(!$this->connected)
     {
@@ -174,6 +193,15 @@ class MySql {
     return $data;
   }
 
+  /**
+   * Will create one elment into the table that we indicate.
+   * 
+   * @param string $table The name of the table where we can to create a new element
+   * @param string[] $columns The names of the columns that we want to create
+   * @param string[] $valus The values of the columns that we want to create
+   * 
+   * @return int last_id
+   */
   public function createOne($table, $columns, $values) {
     if(!$this->connected) {
       $this->connect();
@@ -191,6 +219,15 @@ class MySql {
      
   }
 
+
+  /**
+   * Will delete one element of the table
+   * 
+   * @param string $table The name of the table
+   * @param int $id The id of the element that we want to delete from the indicated table
+   * 
+   * @return bool $result
+   */
   public function deleteOne($table, $id)
   {
     if(!$this->connected) {
