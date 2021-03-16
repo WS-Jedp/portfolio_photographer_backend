@@ -76,7 +76,7 @@ class UserController {
     if($_SERVER["REQUEST_METHOD"] === "POST") {
 
       try {
-        $require_data = ["name","email", "phone","description", "location"]; 
+        $require_data = ["name","email", "phone","description", "location", "password"]; 
 
         for($i = 0; $i < count($require_data); $i++) {
           $in_array = array_key_exists($require_data[$i], $_POST);
@@ -123,7 +123,7 @@ class UserController {
    * 
    * @return int $id Will return the Id of the album deleted 
    */
-  public function delete($id)
+  public function delete()
   {
     if($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -138,7 +138,7 @@ class UserController {
           }
         }
 
-        $id = $this->userModel->deleteOne($id);
+        $id = $this->userModel->deleteOne($_POST["id"]);
 
         $json = [
           "status" => 201,
