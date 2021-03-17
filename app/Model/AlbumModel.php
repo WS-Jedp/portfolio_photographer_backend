@@ -111,4 +111,28 @@ class AlbumModel {
       throw $exception;
     }
   }
+
+  public function getUsers($id) {
+    try {
+      $innerTable = "user";
+      $columns = [
+        "main" => $this->columns,
+        "inner" => ["name as user_name", "email", "id as user_id"]
+      ];
+      $on = [
+        "main" => "user_id",
+        "inner" => "id"
+      ];
+      $condition = [
+        "id" => $id
+      ];
+
+      $data = $this->db->innerJoin($this->table, $innerTable, $columns, $on, $condition);
+
+      return $data;
+
+    } catch(\Exception $exception) {
+      throw $exception;
+    }
+  }
 }

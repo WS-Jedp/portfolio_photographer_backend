@@ -26,7 +26,7 @@ class AlbumController {
         "status" => 200,
         "message" => "The albums were succesfully fetched",
         "data" => [
-          "albums" => $albums
+          "inner" => $albums
         ]
       ];
       http_response_code(200);

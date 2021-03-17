@@ -10,6 +10,7 @@ class MySql {
   protected $password;
   protected $user;
   protected $host;
+  protected $connected = false;
 
   public function __construct()
   {
@@ -21,11 +22,15 @@ class MySql {
     $this->connect();
   }
 
-  protected function createColumnsStatements($columns) {
+  protected function createColumnsStatements($columns, $table = null) {
     $columns_statment = "";
     $length = count($columns) - 1;
     for ($i=0; $i < count($columns); $i++) { 
-      $columns_statment .= "$columns[$i]";
+      if($table) {
+        $columns_statment .= "$table.$columns[$i]";
+      } else {
+        $columns_statment .= "$columns[$i]";
+      }
       if($i != $length) {
         $columns_statment .= ",";
       }
@@ -45,12 +50,17 @@ class MySql {
     return $columns_statment;
   }
 
-  protected function createConditionStatement($conditions) {
+  protected function createConditionStatement($conditions, $table = null) {
     $conditions_statement = "";
-    $length = count($conditions);
+    $lastKey = array_key_last($conditions);
+    
     foreach ($conditions as $key => $value) {
-      $conditions_statement .= "$key='$value'";
-      if($conditions[$length - 1] != $value) {
+      if($table) {
+        $conditions_statement .= "$table.$key='$value'";
+      } else {
+        $conditions_statement .= "$key='$value'";
+      }
+      if($conditions[$lastKey] != $value) {
         $conditions_statement .= ",";
       }
     }
@@ -155,6 +165,15 @@ class MySql {
     return $data;
   }
 
+
+  //LOGIN QUERY
+  /**
+   * @param string $table The name of the table where the User is saved
+   * @param string[] $columns The columns that we want to receive from our database
+   * @param string[] $condition [Optional!] The condition of the statemet
+   * 
+   * @return array Will return an Associative Arrary with the information of the User that we indicate 
+   */
   public function getLogin($table, $columns, $condition = NULL) {
     if(!$this->connected)
     {
@@ -187,6 +206,8 @@ class MySql {
     return $data;
   }
 
+
+  // CREATE QUERY
   /**
    * Will create one elment into the table that we indicate.
    * 
@@ -218,6 +239,7 @@ class MySql {
   }
 
 
+  // DELETE QUERY
   /**
    * Will delete one element of the table
    * 
@@ -240,4 +262,101 @@ class MySql {
 
     return $result;
   }
+
+
+  // INNER QUERIES
+  /**
+   * Create a INNER JOIN query
+   * 
+   * @param string $table The main table to make the query
+   * @param string $innerTable The table which we'll make the INNER JOIN
+   * @param string[] $columns The columns of the main and inner table.
+   * @param string[] $on The keys that relate each table with the another 
+   * @param string $condition [Optional!] If exist a condition will be added to the SQL Statement
+   */
+  public function innerJoin($table, $innerTable, $columns, $on, $condition = null)
+  {
+    $columnsMainTable = $this->createColumnsStatements($columns["main"], $table);
+    $columnsInnerTable = $this->createColumnsStatements($columns["inner"], $innerTable);
+
+    $statement = "SELECT {$columnsMainTable}, {$columnsInnerTable} FROM $table INNER JOIN $innerTable ON $table.{$on["main"]} = $innerTable.{$on["inner"]}";
+
+    if($condition) {
+      $conditionStatement = $this->createConditionStatement($condition, $table);
+      $statement .= " WHERE $conditionStatement";
+    }
+
+    $result = $this->database->query($statement);
+
+    if($this->database->error) {
+        throw new Exception("Something went wrong ->" . $this->database->error);
+    }
+
+    $data = [];
+    if($result->num_rows > 0) 
+    {
+      while($row = $result->fetch_assoc())
+      {
+        array_push($data, $row);
+      }
+    }
+
+    return $data;    
+  }
+
+  /**
+   * Create a multiple INNER JOIN query for the Many To Many tables
+   * 
+   * @param string $table The main table to make the query
+   * @param array[string[]] $innerTable Array of string with the tables name which we'll make the INNER JOIN
+   * @param string[] $columns The columns of the main and inner table.
+   * @param string[] $on The keys that relate each table with the another 
+   * @param string $condition [Optional!] If exist a condition will be added to the SQL Statement
+   */
+  public function multipleInnerJoin($table, $innerTables, $columns, $on, $condition = null)
+  {
+
+    $columnsStatement = '';
+    $last_key = array_key_last($columns);
+    foreach($columns as $key => $value) {
+      $columnsStatement .= $this->createColumnsStatements($value, $key);
+      if($columns[$last_key] != $value) {
+        $columnsStatement .= ',';
+      }
+    }
+
+    $innerJoinStatements = '';
+    $last_key = array_key_last($innerTables);
+    foreach ($innerTables as $innerTable => $innerTableKey) {
+      $innerJoinStatements .= "INNER JOIN $innerTable ON $table.$innerTableKey = $innerTable.{$on[$innerTable]} ";
+    }
+
+    $statement = "SELECT $columnsStatement FROM $table $innerJoinStatements";
+
+    if($condition) {
+      $conditionStatement = $this->createConditionStatement($condition, $table);
+      $statement .= " WHERE $conditionStatement";
+    }
+
+    $result = $this->database->query($statement);
+
+    if($this->database->error) {
+        throw new Exception("Something went wrong ->" . $this->database->error);
+    }
+
+    $data = [];
+    if($result->num_rows > 0) 
+    {
+      while($row = $result->fetch_assoc())
+      {
+        array_push($data, $row);
+      }
+    }
+
+    return $data;    
+  }
+
+  
 }
+
+ 
